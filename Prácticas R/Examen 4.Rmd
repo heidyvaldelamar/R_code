@@ -1,0 +1,91 @@
+---
+title: "Cuarto examen parcial"
+author: "Heidy Valdelamar González"
+date: "20/1/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## 1. Leer la base de datos
+```{r}
+# Tecleamos el nombre que le vamos a asignar a la base de datos y con el comando "read.csv()" vamos a leer la base de datos(asegurarse que sea el mismo formato que la base de datos).
+
+bbs<-read.csv("baby_smoke.csv")
+# Ahora vamos a ver la base de dato bbs, con el comando "view()"
+View(bbs)
+```
+##2. Revisa la estructura de los datos.
+```{r}
+# Con el comando "str()" revisaremos que vtipo de variables tenemos en la base de datos.
+str(bbs)
+# Podemos oservar que las variables weeks y weight son variables numŕicas.
+```
+##3. Realiza un resúmen.
+```{r}
+# Para ver el resumen de la base de datos y su estadística descriptiva utilizaremos el comando "summary()"
+summary(bbs)
+# La mediana o promedio de semanas de gestación es de 39; el máximo peso de un bebé fue de 11.750.
+```
+##4. Realiza un histograma.
+```{r}
+#Ahora realizaremos un histograma de la variable "weight" con el comando "hist()" dentro del paréntesis especificamos la base de datos y con el símbolo de pesos la variable que queremos visualizar.
+hist(bbs$weight)
+
+#Observando el histograma se puede inferir que el peso de los neonatos en su mayoría es normal, ya que un peso normal ronda entre las 5.5 y 8.8 libras.Tomando en cuenta que la distribución del histograma parece normal.
+```
+##5. Obtén una muestra aleatoria.
+```{r}
+#Ahore vamos a obtener una muestra aleatoria de la ase de datos de 100 sujetos, primero asignamos un nombre a la muestra con el caracter de asignación, seguido especificamos la base de datos que es "bbs", luego con el operador corchete "[]" vamos a insertar la función "sample()" y dentro de esta función ponemos el número de muestras "1" y ":", seguido el comando "nrow()"dentro de "nrow()" especificamos la base de datos de la que queremos obtener una muestra y cerramos la función "nrow()",los separamos por una coma "," y tecleamos el número de sujetos "100" cerramos la función sample y por último cerramos el corchete.
+muestra.aleatoria.bbs100<-bbs[sample(1:nrow(bbs), "100"),]
+#Ahora observemos la muestra aleatoria con el comando "view()", como necesitamos obtener la media de "weight" nos aseguramos de que no contenga caracteres no numéricos.
+View(muestra.aleatoria.bbs100)
+#Observamos que sólo contiene caracteres numéricos y procedemos a obtener el promedio.
+
+#Ahora para saber el peso promedio de los neonatos en la muestra "muestra.aleatoria.bbs100", primero asignamos un nombre a la variable con el caracter de asignación y después utilizamos el comando "mean()" referente a la media, en esta función especificamos la base de datos (en este caso la muestra que acabamos de obtener) y con un símbolo de pesos "$"la variable que queremos "weight".
+media.w<-mean(muestra.aleatoria.bbs100$weight)
+#La media es de 7.0776 libras.
+```
+##6. Obtén una muestra estratificada de la siguiente manera:
+Estrato 1: cincuenta sujetos (i.e. mamás) aleatorios que SÍ fumaron durante el embarazo.
+```{r}
+#Para filtrar los sujetos de las mujeres que sí fumaron durante el embarazo, asignamos un nombre a la muestra y con el comando "subset()" especifico la base de datos "bbs", la variable "habit" y dos "=", finalmente entre comillas "smoker".
+bbs.smokers<-subset(bbs, habit=="smoker")
+View(bbs.smokers)
+#Obtenemos una muestra aleatoria de 50 sujetos de "bbs.smokers" de la misma manera que se realizó en la parte 5 de la muestra aleatoria de 100.
+muestra.estrato.smokers<-bbs.smokers[sample(1:nrow(bbs.smokers),50) ,]
+View(muestra.estrato.smokers)
+```
+
+Estrato 2: cincuenta sujetos (i.e. mamás) aleatorios que NO fumaron durante el embarazo. 
+```{r}
+#Para filtrar los sujetos de las mujeres que no fumaron durante el embarazo, asignamos un nombre a la muestra y con el comando "subset()" especifico la base de datos "bbs", la variable "habit" y dos "=", finalmente entre comillas "nonsmoker".
+bbs.nonsmokers<-subset(bbs, habit=="nonsmoker")
+View(bbs.nonsmokers)
+#Obtenemos una muestra aleatoria de 50 sujetos de "bbs.smokers" de la misma manera que se realizó anteriormente en la muestra de "bbs.smokers".
+muestra.estrato.nonsmokers<-bbs.nonsmokers[sample(1:nrow(bbs.nonsmokers),50), ]
+View(muestra.estrato.nonsmokers)
+
+```
+7.  El archivo “lista.de.sujetos.csv” contiene el id de cada sujeto (i.e. mamás).
+
+Asigna aleatoriamente la mitad de ellas a un grupo control. 
+
+y la otra mitad a un grupo experimental.
+```{r}
+#Primero leer la base de datos "lista.de.sujetos.csv" ñe asignamos un nombre e insertamos el comando "read.csv()"
+mamás<-read.csv("lista.de.sujetos.csv")
+View(mamás)
+#Como se tratan de 1000 datos asignaremos 500 a un grupo.control; asignamos el nombre con el caracter de asignación después la base de datos "mamás" abrimos corchetes y con la función "sample" especificamos el numero de muestras "1" después ":", insertamos la función "nrow()" y dentro la base de datos "mamás" cerramos "nrow", insertamos una coma "," el número de sujetos "500" cerramos "sample()" y al final una coma "," y cerramos el corchete.
+grupo.control<-mamás[sample(1:nrow(mamás),500),]
+View(grupo.control)
+#Ahora creamos un vector lógico para saber quienes pertenecen al grupo control; asignamos un nombre al vector con el caracter de asignación seleccionamos la base de datos "sujetos" y con el símbolo de pesos "$" seleccionamos la variable después con el comando "%in%" esecificamos que nos diga quienes están en el grupo. control.
+pertenece.al.grupo.control<-mamás$ID_Sujetos %in% grupo.control
+pertenece.al.grupo.control
+
+```
+
+
+
+
