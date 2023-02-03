@@ -1,0 +1,347 @@
+---
+title: "Proyecto Final de Probabilidad y Estadística"
+author: "Heidy Valdelamar Gonzalez"
+date: "2022-11-23"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Pruebas de entrenamiento muscular inspiratorio de flujo objetivo (TF-IMT) en pacientes con enfermedad pulmonar obstructiva crónica (EPOC) 
+
+Heijdra et al. Afirman que muchos pacientes con enfermedad pulmonar
+obstructiva crónica (EPOC) grave presentan una saturación arterial de
+oxígeno baja durante la noche. Estos investigadores realizaron un
+estudio para **determinar si existe una relación causal entre la
+disfunción de los músculos respiratorios y la saturación nocturna.**
+
+Los sujetos fueron 20 (5 mujeres, 15 hombres) pacientes con EPOC
+asignados aleatoriamente a recibir un entrenamiento muscular
+inspiratorio de flujo objetivo (TF-IMT) al 60 por ciento de su presión
+bucal inspiratoria máxima (PImáx) o un TF-IMT simulado al 10 por ciento
+de la PI máx.
+
+Entre los datos recogidos estaban los tiempos de resistencia (Tiempo, s)
+de cada sujeto al inicio del entrenamiento y 10 semanas después.
+
+-   Aplique una de las técnicas no paramétricas.
+-   Aplique una de las técnicas de ANOVA.
+-   Formular las hipótesis pertinentes, realizar las pruebas adecuadas y
+    hallar los valores p.
+-   Indique las decisiones estadísticas y las conclusiones clínicas que
+    justifican los resultados de sus pruebas de hipótesis.
+-   Describa la(s) población(es) a la(s) que cree que son aplicables sus
+    inferencias.
+-   Indique los supuestos necesarios para la validez de sus análisis.
+
+# Hipótesis.
+
+Si existe una relación causal entre la disfunción de los músculos
+respiratorios y la saturación nocturna, entonces los pacientes que
+recibieron un entrenamiento muscular inspiratorio de flujo objetivo
+(TF-IMT) al 10 y 60 porciento de su presión bucal inspiratoria máxima
+(PI máx) con EPOC presentarán un incremento de resistencia al final del
+entrenamiento.
+
+La media en la semana 0 \< La media en la semana 10 La diferencia en
+resistencia (semana 0 - semana 10) es negativa:
+
+Por lo tanto, la hipótesis nula es que H0 : promedio semana 0 - semana
+10 \> 0
+
+Por lo tanto, la hipótesis alternativa es que HA : promedio semana 0 -
+semana 10 \<= 0
+
+# Captura de los datos
+
+Llamamos a las librerías que usaremos:
+
+```{r}
+library("car")
+library("emmeans")
+library("rstatix")
+library("tidyverse")
+library("ggplot2")
+library("coin")
+library("ggpubr")
+library("ggstatsplot")
+library("mvnormtest")
+```
+
+Leemos base de datos:
+
+```{r}
+datos <- read_csv(file="REV_C13_25.csv", show_col_types = FALSE)
+datos
+```
+
+# Comparación de Resistencia por semanas de cada grupo
+
+-   El grupo 1 corresponde a los pacientes de (PI máx) al 60 porciento.
+
+-   El grupo 2 corresponde a los pacientes de (PI máx) al 10 porciento.
+
+Filtramos los datos para cada grupo:
+
+```{r}
+#Grupo 1
+g1 <- datos %>% filter(GROUP ==1)
+g1 <- subset(g1, 
+             select = c(week0, week10))
+#Grupo 2
+g2 <- datos %>% filter(GROUP == 2) 
+g2 <- subset(g2, 
+             select = c(week0, week10))
+g1
+g2
+```
+
+Para hacer una prueba t usando notación de fórmula de nuestra hipótesis
+se necesitan alargar los datos.
+
+```{r}
+#Elongamos los datos para g1
+g1_long <- g1 %>% 
+  pivot_longer(cols = c("week0","week10"), 
+               names_to = "Semanas", 
+               values_to = "Resistencia")
+
+g1_long <- g1_long %>% 
+  mutate( Semanas = Semanas %>% 
+            fct_relevel("week0","week10"))
+
+# Estimación de las medianas y sus cuantiles
+g1_long %>% 
+  group_by(Semanas) %>%
+  get_summary_stats(Resistencia, type = "median_iqr")
+```
+
+Se van a transformar los datos de tabla a formato "largo" por un comando
+de pivot_longer(). Y se usará la librería ggstatsplot para graficar los
+datos y los resultados de la prueba t.
+
+```{r}
+#Elongamos los datos para g2
+
+g2_long <- g2 %>% 
+  pivot_longer(cols = c("week0","week10"), 
+               names_to = "Semanas", 
+               values_to = "Resistencia")
+
+g2_long <- g2_long %>% 
+  mutate( Semanas = Semanas %>% 
+            fct_relevel("week0","week10"))
+# Estimación de las medianas y sus cuantiles
+g2_long %>% 
+  group_by(Semanas) %>%
+  get_summary_stats(Resistencia, type = "median_iqr")
+```
+
+## Boxplot
+
+Grupo 1
+
+```{r}
+ggboxplot(g1_long, x = "Semanas", y = "Resistencia", add = "jitter", fill = "Semanas")+ 
+  ggtitle("Grupo 1")
+```
+
+Grupo 2
+
+```{r}
+ggboxplot(g2_long, x = "Semanas", y = "Resistencia", add = "jitter", fill = "Semanas")+ 
+  ggtitle("Grupo 2")
+```
+
+## Prueba de Hipótesis: Comparaciones pareadas (t pareada)
+
+### Prueba T pareada
+
+La prueba t pareada es un método que se usa para comprobar si la media
+entre pares de medidas es o no igual a cero.
+
+La mediana de la "primera población" es menor (opción "less").
+
+Uno de los parámetros estimados por ggwithinstats es el tamaño del
+efecto por la estadística g de Hedge expresa la diferencia entre los
+promedios de las poblaciones en unidades de la desviación estándar
+combinada (pooled standard deviation).
+
+#### Grupo 1
+
+```{r}
+t.test(Resistencia ~ Semanas, data = g1_long, alternative = "less", mu=0, paired = TRUE, var.equal = TRUE, conf.level = 0.95)
+```
+
+-   La diferencia en la variación de los datos de la muestra es de
+    -4.0076.
+
+-   El grado de libertad es de 9
+
+-   El grado de significancia es de 0.001538 siendo menor que 0.05 por
+    lo que se rechaza la hipótesis nula y se acepta la hipótesis
+    alternativa.
+
+-   Diferencia de la media es de - 189.2 (negativa) ya que los
+    resultados muestran que la media de la semana cero es menor que la
+    media de la semana diez.
+
+Graficamos los resultados:
+
+```{r}
+
+ggwithinstats(
+  data = g1_long, x = Semanas, y = Resistencia, 
+  title = "Diferencia de resistencia de la prueba del grupo 1", 
+  plot.type = "violin", 
+  type = "parametric", 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "significant", 
+  p.adjust.method = "holm", 
+  conf.level = 0.95, 
+  var.equal = TRUE)
+```
+
+#### Grupo 2
+
+```{r}
+t.test(Resistencia ~ Semanas, data = g2_long, alternative = "less", mu=0, paired = TRUE, var.equal = TRUE, conf.level = 0.95)
+```
+
+-   La diferencia en la variación de los datos de la muestra es de
+    1.3236.
+
+-   El grado de libertad es de 9
+
+-   El grado de significancia es de 0.8909 siendo mayor que 0.05 por lo
+    que se rechaza la hipótesis alternativa y se acepta la hipótesis
+    nula.
+
+-   Diferencia de la media es de 51.2 (positiva) ya que los resultados
+    muestran que la media de la semana cero es mayor que la media de la
+    semana diez.
+
+Graficamos los resultados:
+
+```{r}
+
+ggwithinstats(
+  data = g2_long, x = Semanas, y = Resistencia, 
+  title = "Diferencia de resistencia de la prueba del grupo 2", 
+  plot.type = "violin", 
+  type = "parametric", 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "significant", 
+  p.adjust.method = "holm", 
+  conf.level = 0.95, 
+  var.equal = TRUE)
+```
+
+## ANOVA
+
+El análisis de varianza se usa principalmente para dos propósitos:
+
+1)  para estimar y desarrollar prueba de hipótesis de varianzas de una
+    población.
+
+2)  Estimar y probar medias poblacionales.
+
+### ANOVA del grupo 1
+
+```{r}
+g1_aov <- aov(Resistencia ~ Semanas, data=g1_long)
+
+summary(g1_aov)
+```
+
+### ANOVA del grupo 2
+
+```{r}
+g2_aov <- aov(Resistencia ~ Semanas, data=g2_long)
+
+summary(g2_aov)
+```
+
+Hemos encontrado que para ambos grupos no hay un efecto clinicamente
+significativo de la variable Semanas (el valor de p ha sido mayor a
+0.05), por lo tanto no es necesario efectuar el método Tukey y se acepta
+la hipótesis nula.
+
+## Prueba de normalidad y Prueba de Wilcoxon para dos muestras pareadas.
+
+### Grupo 1
+
+```{r}
+g1_stat.test <-
+  wilcox_test(Resistencia ~ Semanas, data=g2_long, paired = TRUE, alternative = "less") %>%
+  add_significance()
+g1_stat.test
+```
+
+```{r}
+g1_stat.test <- pairwise_wilcox_test(
+  g1_long,
+  Resistencia ~ Semanas,
+  comparisons = NULL,
+  ref.group = NULL,
+  p.adjust.method = "holm",
+  detailed = FALSE,
+)
+g1_stat.test
+```
+
+### Grupo 2
+```{r}
+g1_stat.test <-
+  wilcox_test(Resistencia ~ Semanas, data=g2_long, paired = TRUE, alternative = "less") %>%
+  add_significance()
+g1_stat.test
+```
+
+```{r}
+g2_stat.test <- pairwise_wilcox_test(
+  g2_long,
+  Resistencia ~ Semanas,
+  comparisons = NULL,
+  ref.group = NULL,
+  p.adjust.method = "holm",
+  detailed = FALSE,
+)
+g2_stat.test
+```
+
+Hemos encontrado que para ambos grupos no hay un efecto clinicamente
+significativo de la variable Semanas (el valor de p ha sido mayor a
+0.05), se acepta la hipótesis nula.
+
+# Conclusiones
+
+En las pruebas de ANOVA y las técnicas no paramétricas no es conveniente
+ya que estas pruebas son para 3 o más grupos.
+
+Al observar los resultados notamos diferencias entre la evolución de la
+resistencia muscular inspiratoria de cada grupo. El grupo que realizó el
+entrenamiento a una presión bucal inspiratoria mayor (60 por ciento de
+la máxima) tuvo resultados favorables en su resistencia muscular después
+de su entrenamiento por 10 semanas; mientras que el grupo que realizó el
+entrenamiento a una presión bucal inspiratoria menor (10 por ciento de
+la máxima) no presentó mejorías en su resistencia muscular ya que la
+media después de su entrenamiento por 10 semanas fue menor a la media
+previa al entrenamiento, sin embargo, notamos que algunos pacientes sí
+mejoraron su resisencia y además la diferencia de medias de resistencia
+en el entrenamiento no fue tan significativa.
+
+Se concluye que los pacientes con EPOC que realizaron el entrenamiento
+muscular inspiratorio de flujo objetivo (TF-IMT) a una mayor presión
+bucal inspiratoria máxima (PImáx) mejoraron su condición a diferencia
+del grupo que relizó el entrenamiento a una menor presión, por lo que es
+significativo para demostrar la relación causal entre la disfunción de
+los músculos respiratorios y la saturación nocturna.

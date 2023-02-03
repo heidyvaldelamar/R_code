@@ -1,0 +1,38 @@
+---
+title: "Tarea_04_PE_HVG"
+author: "Heidy Valdelamar Gonzalez"
+date: "2022-09-19"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Teoría del muestreo
+
+## 1
+```{r}
+# muestra aleatoria de 40 hombres
+pnorm(100, mean = (797-660), sd = sqrt(482^2/40)+(414^2/35), lower.tail = FALSE)
+```
+## 2 
+```{r}
+pnorm(8,mean=0,sd = sqrt(100/25+80/16),lower.tail = FALSE)
+```
+## 3
+```{r}
+pnorm(0.70, mean = (0.64), sd = sqrt((0.64)*(1- 0.64)/125), lower.tail = FALSE)
+```
+## 4
+```{r}
+pnorm(.6, mean = (.65), sd = sqrt((.65)*(.6)/100), lower.tail = FALSE)
+pnorm(.6, mean = (.58), sd = sqrt((.58)*(.6)/100), lower.tail = TRUE)
+pnorm(.6, mean = (.63-.56), sd = sqrt((.63)*(.6)/100) + sqrt((.53)*(.6)/100), lower.tail = FALSE)
+```
+## 5
+```{r}
+pnorm(0.09, mean = (0.095-0.049), sd = sqrt((0.095)*(905)/100 + (0.049)*(951)/120), lower.tail = FALSE)
+```
+

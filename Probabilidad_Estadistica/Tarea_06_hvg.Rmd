@@ -1,0 +1,98 @@
+---
+title: "Tarea 06 Prueba de Hipótesis"
+author: "Heidy Valdelamar Gonzalez"
+date: "2022-11-16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Llamamos las librerías que usaremos
+```{r}
+library(tidyverse)
+library(Rmisc)
+library(rcompanion)
+```
+
+
+
+1. Vitacca et al. Realizaron un estudio para determinar si la posición supina o la posición sentada empeoran los flujos espiratorios forzados estáticos y las mediciones de la mecánica pulmonar. Los sujetos eran personas de edad que vivían en una residencia de ancianos, clínicamente estables y sin evidencia clínica de enfermedades cardiorrespiratorias. Entre los datos recogidos se encuentran los siguientes valores porcentuales de FEV para los sujetos en posición sentada y supina en REV_C07_46.csv.
+
+- Realice un análisis estadístico de los datos (que incluya la comprobación de           hipótesis y la construcción de intervalos de confianza) que, en su opinión, pueda      aportar información útil a los investigadores.
+
+- Indique todos los supuestos necesarios para validar su análisis.
+
+- Encuentre los valores p para todos los estadísticos de prueba calculados.
+
+
+Leer base de datos
+```{r}
+bd <- read_csv("REV_C07_46.csv", show_col_types = FALSE)
+bd
+tail(bd)
+```
+
+
+```{r}
+boxplot(bd$SIT, bd$SUP, xlab = "Sujetos", ylab = "Valores porcetuales de FEV")
+```
+```{r}
+#  Comparamos la igualdad
+t.test(bd$SIT, bd$SUP, alternative = "two.sided", mu = 0,  var.equal = FALSE, conf.level = .95)
+```
+
+2. Montner et al. realizaron estudios para comprobar los efectos de la hiperhidratación con glicerol (GEH) en la resistencia del rendimiento ciclista. Los 11 sujetos, de edades comprendidas entre los 22 y los 40 años, practicaban regularmente el ciclismo al menos 75 millas por semana. Los datos en REV_C07_41.csv son los volúmenes de salida de orina antes del ejercicio (ml) tras la ingestión de glicerol y agua.
+
+- Realice un análisis estadístico de los datos (que incluya la comprobación de hipótesis y la construcción de intervalos de confianza) que, en su opinión, pueda aportar información útil a los investigadores.
+- Indique todos los supuestos necesarios para validar su análisis.
+- Encuentre los valores p para todos los estadísticos de prueba calculados.
+
+Leemos el csv
+```{r}
+GEH <- read_csv("REV_C07_41.csv", show_col_types = FALSE)
+GEH
+```
+
+Gráfica Boxplot
+```{r}
+boxplot(GEH$Glycerol, GEH$Control, ylab = "volúmenes de orina (ml) iniciales")
+```
+
+El grupo control tuvo niveles mayores de volúmenes de orina, sin embargo, el grupo que consumió agua con glycerol es más grande, pero en promedio el volumen de orina es menor. tendríamos una diferencia negariva de ambos grupos.
+
+
+Prueba T_Student pareada doble por la derecha, nivel de confianza del 99%
+```{r}
+t.test(GEH$Glycerol, GEH$Control, alternative = "less", paired = TRUE, conf.level = 0.99)
+```
+Tenemos un valor p de 1.671e-05 menor a el alpha que definimos = 0.005, por lo que descartamos la hipótesis nula. El intervalo de confianza es de -406.5462, la diferencia de los promedios es negativa: -666.3636. Concluimos que la diferencia entre los grupos es que la media del grupo control es mayor a la media del grupo que consumió agua con glycerol, por lo tanto el agua con glycerol no induce la hiperhidratación en los 11 sujetos.
+
+3. Algunos investigadores han observado una mayor resistencia de las vías respiratorias en los fumadores que en los no fumadores. Supongamos que un estudio, realizado para comparar el porcentaje de retención braquiobronquial de partículas en gemelos monocigóticos fumadores-discordantes, arrojó los resultados en REV_C07_29.csv. ¿Apoyan estos datos la hipótesis de que el aclaramiento traqueobronquial es más lento en los fumadores? Sea alfa = 0,05 y determine el valor p para esta prueba.
+
+```{r}
+fuma <- read_csv("REV_C07_29.csv",show_col_types = FALSE )
+fuma
+```
+```{r}
+boxplot(fuma$Smoking, fuma$Nonsmoking, xlab = "Sujetos", ylab = "porcentaje de retención")
+```
+```{r}
+# Para hacer una prueba t usando notación de fórmula fuma ~ Condition
+# Se necesitan alargar los datos
+
+fuma_long <- fuma %>% pivot_longer(cols = everything(), names_to = "Condition", values_to = "fuma")
+
+# y estar seguros que Condition es un factor en el orden adecuado
+
+fuma_long <- fuma_long %>% mutate( Condition = Condition %>% fct_relevel("Smoking", "Nonsmoking"))
+boxplot(fuma ~ Condition, data = fuma_long, ylab = "porcentaje de retención")
+```
+```{r}
+t.test(fuma ~ Condition, data = fuma_long, alternative = "less", mu=0, paired = TRUE, var.equal = TRUE, conf.level = 0.95)
+```
+
+
+
+

@@ -1,0 +1,140 @@
+---
+title: "Tarea_01_hvg"
+author: "Heidy Valdelamar Gonzalez"
+date: "2022-08-29"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+## Cargo librerías ##
+library("tidyverse")
+library("fdth")
+library("UsingR")
+library("formatR")
+
+##primer ejercicio##
+#En un estudio de la práctica del cuidado oral en el hogar y las razones para buscar atención dental entre personas en diálisis renal, Atassi estudió a 90 sujetos en diálisis renal. El estado de higiene bucal de todos los sujetos se examinó utilizando un índice de placa con un rango de 0 a 3 (0 = sin depósitos de placa blanda, 3 = abundancia de depósitos de placa blanda). Los datos en EXR_C02_S03_01.csv muestran las puntuaciones del índice de placa para los 90 sujetos.#
+
+## Leer base de datos ##
+  data01<-read_csv("EXR_C02_S03_01.csv")
+## Distribución de frecuencia ##
+
+#Frecuencia absoluta: Indica el número de veces que se repite un valor de la variable.#
+#Frecuencia relativa: Indica la proporción con que se repite un valor. Se obtiene dividiendo la frecuencia absoluta entre el tamaño de la muestra.#
+#Frecuencia absoluta acumulada: Indica el número de valores que son menores o iguales que el valor dado.#
+#Frecuencia relativa porcentual acumulada: Indica el porcentaje de datos que son menores o iguales que el valor dado.#
+
+
+#Creamos una tabla de datos#
+  tabla01 <- table(data01)
+view(tabla01)
+#Obtenemos la frecuencia relativa porcentual.#
+  (tabla01)/margin.table(tabla01)
+
+#Obtenemos la frecuencia relativa porcentual acumulada.#
+  frp <- cumsum(tabla01*100)/margin.table(tabla01)
+  view(frp)
+
+## Histograma ##
+  hist(data01$pindex, prob=TRUE)
+
+##Polígono de frecuencias##
+  simple.freqpoly(data01$pindex)
+
+## Preguntas ##
+# (b) ¿Qué porcentaje de las medidas son menores que 2.00? #
+  sum(data01$pindex < "2", na.rm = TRUE)*100/90
+
+# (c) ¿Qué proporción de los sujetos tienen medidas mayores o iguales a 1,50? #
+  sum(data01$pindex >= "1.5", na.rm = TRUE)/90
+
+# (d) ¿Qué porcentaje de las medidas están entre 1,50 y 1,99 inclusive? #
+  sum(data01$pindex> "1.5" & data01$pindex <"1.99", na.rm = TRUE)*100/90
+
+# (e) ¿Cuántas de las medidas son mayores que 2.49? #
+  sum(data01$pindex > "2.49", na.rm = TRUE)
+
+```
+----------------------------------------------------------------------------------------------------------------------------------
+```{r}
+##segundo ejercicio##
+#Janardhan et al. realizaron un estudio en el que midieron aneurismas intracraneales idénticos (AII) en 125 pacientes. Los investigadores examinaron las complicaciones posteriores al procedimiento y concluyeron que los IIA se pueden tratar de manera segura sin causar mortalidad con una tasa de complicaciones más baja que la informada anteriormente. Los datos en EXR_C02_S03_02.csv son los tamaños (en milímetros) de los 159 IIA de la muestra.#
+
+## Leer base de datos ##
+  data02<-read_csv("EXR_C02_S03_02.csv")
+## Distribución de frecuencia ##
+
+#Creamos una tabla de datos#
+  tabla02 <- table(data02)
+
+#Obtenemos la frecuencia relativa porcentual.#
+  (tabla02)/margin.table(tabla02)
+
+#Obtenemos la frecuencia relativa porcentual acumulada.#
+  cumsum(tabla02)/margin.table(tabla02)
+
+## Histograma ##
+  hist(data01$sizes, prob=TRUE)
+
+##Polígono de frecuencias##
+  simple.freqpoly(data02$sizes)
+
+## Preguntas ##
+# (b) ¿Qué porcentaje de las medidas están entre 10 y 14,9 inclusive? #
+  sum(data02$sizes> "10" & data02$sizes <"14.9", na.rm = TRUE)*100/159
+
+# (c) ¿Cuántas observaciones son menos de 20? #
+  sum(data02$sizes < "20", na.rm = TRUE)
+
+# (d) ¿Qué proporción de las medidas son mayores o iguales a 25? #
+  sum(data02$sizes >= "25", na.rm = TRUE)/159
+
+# (e) ¿Qué porcentaje de las medidas son menores que 10.0 y mayores que 19.95? #
+  sum(data02$sizes> "10" & data02$sizes <"19.95", na.rm = TRUE)*100/159
+
+```
+----------------------------------------------------------------------------------------------------------------------------------
+```{r}
+##tercer ejercicio##
+#Hoekema et al. estudió la morfología craneofacial de pacientes diagnosticados con síndrome de apnea obstructiva del sueño (SAOS) en sujetos masculinos sanos. Una de las variables demográficas que recopilaron los investigadores para todos los sujetos fue el índice de masa corporal (IMC) (que se calcula dividiendo el peso en kg por el cuadrado de la altura del paciente en cm) en EXR_C02_s03_03.csv, son los valores de IMC de 29 sujetos con SAOS.#
+
+## Leer base de datos ##
+  data03<-read_csv("EXR_C02_S03_03.csv")
+## Distribución de frecuencia ##
+
+#Creamos una tabla de datos#
+  tabla03 <- table(data03)
+
+#Obtenemos la frecuencia relativa porcentual.#
+  (tabla03)/margin.table(tabla03)
+
+#Obtenemos la frecuencia relativa porcentual acumulada.#
+  cumsum(tabla03)/margin.table(tabla03)
+
+## Histograma ##
+  hist(data03$bmi, prob=TRUE)
+
+##Polígono de frecuencias##
+  simple.freqpoly(data03$bmi)
+
+## Preguntas ##
+# (b) ¿Qué porcentaje de las medidas son menos de 30? #
+  sum(data03$bmi < "30", na.rm = TRUE)*100/29
+  
+# (c) ¿Qué porcentaje de las medidas están entre 40 y 49,99 inclusive? #
+   sum(data03$bmi> "40" & data03$bmi <"49.99", na.rm = TRUE)*100/29
+   
+# (d) ¿Qué porcentaje de las medidas son mayores que 34.99? #
+  sum(data03$bmi > "34.99", na.rm = TRUE)*100/29
+  
+# (e) ¿Cuántas observaciones son menos de 40? #
+  sum(data03$bmi < "40", na.rm = TRUE) 
+  
+```
+

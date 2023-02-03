@@ -1,0 +1,240 @@
+---
+title: "Examen_01_hvg"
+author: "Heidy Valdelamar Gonzalez"
+date: "2022-09-12"
+output:
+  word_document: default
+  html_document: default
+---
+## PRIMER EJERCICIO ##
+```{r}
+## Cargo librerías ##
+library("tidyverse")
+library("fdth")
+library("UsingR")
+library("formatR")
+
+## leer base de datos ##
+bd1 <- read_csv("LDS_C02_NCBIRTH800.csv")
+```
+
+## MAGE ##
+
+```{r}
+#Creamos una tabla de datos#
+  tablamage <- table(bd1$mage)
+view(tablamage)
+
+# 1.	Calculate the mean, median, standard deviation, IQR, and range. #
+mean(tablamage, trim = 0, na.rm = 0)
+median(tablamage, trim = 0, na.rm = 0)
+sd(tablamage)
+IQR(tablamage)
+range(tablamage, trim = 0, na.rm = 0)
+
+# 2.	For each, construct a histogram and comment on the shape of the distribution. #
+histogram(bd1$mage, prob=TRUE)
+
+# 4.	Construct box-plots for all four variables. #
+boxplot(tablamage)
+
+# 6.	Construct side-by-side box-plots of the variable of MAGE for women for women who are and are not married. Do you see differences in ages in the two groups? Which group has more variability?#
+dftmage <- data_frame(bd1$marital, bd1$mage)
+view(dftmage)
+boxplot(bd1$marital ~ bd1$mage,  horizontal=TRUE)
+#Más variedad que está del grupo que está casado#
+
+```
+
+## WEEKS ## 
+
+```{r}
+
+#Creamos una tabla de datos#
+  tablaweeks <- table(bd1$weeks)
+view(tablaweeks)
+
+# 1.	Calculate the mean, median, standard deviation, IQR, and range. #
+mean(tablaweeks, trim = 0, na.rm = 0)
+median(tablaweeks, trim = 0, na.rm = 0)
+sd(tablaweeks)
+IQR(tablaweeks)
+range(tablaweeks, trim = 0, na.rm = 0)
+
+# 2.	For each, construct a histogram and comment on the shape of the distribution. #
+histogram(bd1$weeks, prob=TRUE)
+
+# 4.	Construct box-plots for all four variables. #
+boxplot(tablaweeks)
+
+```
+
+## GAINED ##
+
+```{r}
+
+#Creamos una tabla de datos#
+  tablagained<- table(bd1$gained)
+view(tablagained)
+
+# 1.	Calculate the mean, median, standard deviation, IQR, and range. #
+mean(tablagained, trim = 0, na.rm = 0)
+median(tablagained, trim = 0, na.rm = 0)
+sd(tablagained)
+IQR(tablagained)
+range(tablagained, trim = 0, na.rm = 0)
+
+# 2.	For each, construct a histogram and comment on the shape of the distribution. #
+histogram(bd1$gained, prob=TRUE)
+
+# 4.	Construct box-plots for all four variables. #
+boxplot(tablagained)
+```
+
+## TOUNCES ##
+
+```{r}
+
+#Creamos una tabla de datos#
+  tablatounces<- table(bd1$tounces)
+view(tablatounces)
+
+# 1.	Calculate the mean, median, standard deviation, IQR, and range. #
+mean(tablatounces, trim = 0, na.rm = 0)
+median(tablatounces, trim = 0, na.rm = 0)
+sd(tablatounces)
+IQR(tablatounces)
+range(tablatounces, trim = 0, na.rm = 0)
+
+# 2.	For each, construct a histogram and comment on the shape of the distribution. #
+histogram(bd1$tounces, prob=TRUE)
+
+# 4.	Construct box-plots for all four variables. #
+boxplot(tablatounces)
+```
+
+## TGRAMS ##
+
+```{r}
+
+#Creamos una tabla de datos#
+  tablatgrams<- table(bd1$tgrams)
+view(tablatgrams)
+
+# 1.	Calculate the mean, median, standard deviation, IQR, and range. #
+mean(tablatgrams, trim = 0, na.rm = 0)
+median(tablatgrams, trim = 0, na.rm = 0)
+sd(tablatgrams)
+IQR(tablatgrams)
+range(tablatgrams, trim = 0, na.rm = 0)
+
+# 2.	For each, construct a histogram and comment on the shape of the distribution. #
+histogram(bd1$tgrams, prob=TRUE)
+
+# 4.	Construct box-plots for all four variables. #
+boxplot(tablatgrams)
+
+# 5.	Construct side-by-side box-plots for the variable of TGRAMS for women who admitted to smoking and women who did not admit to smoking, Which group has more variability? #
+dftgrams <- data_frame(bd1$smoke, bd1$tgrams)
+view(dftgrams)
+boxplot(bd1$smoke ~ bd1$tgrams)
+
+#más variedad grupo que no fuma#
+
+```
+## SEGUNDO EJERCICIO ##
+# a)	Calcule la probabilidad de que un postulante tomado de forma aleatoria de este grupo:#
+#  1.	Tuviera un examen de calificación baja.#
+
+```{r}
+totalbaja = 200
+total = 1000
+
+P_Baja = (totalbaja/total)
+ P_Baja
+ 
+```
+
+  # 2.	Sea graduado de una preparatoria de calidad superior #
+ 
+```{r} 
+ totalsuperior = 500
+total = 1000
+
+P_Superior = (totalsuperior/total)
+ P_Superior
+```
+
+  # 3.	Tuviera una calificación baja en su examen y sea graduado de una preparatoria de calidad superior.#
+
+```{r} 
+ totalbajasuperior = 55
+total = 1000
+P_Bajasup = (totalbajasuperior/total)
+ P_Bajasup
+ 
+```
+
+  # 4.	Tuviera una calificación alta en su examen o sea graduado de una preparatoria de calidad superior. #
+
+```{r}
+# 4.	Tuviera una calificación alta en su examen o sea graduado de una preparatoria de calidad superior. #
+ totalaltasuperior = 300
+total = 1000
+
+P_Altasup = (totalaltasuperior/total)
+ P_Altasup
+ 
+```
+
+
+#b)	Calcule las siguientes probabilidades:
+
+#1. P(A) 		2. P(H)		3. P(M)
+
+```{r}
+#P(A)
+ totalA = 300
+total = 1000
+
+P_A = (totalA/total)
+ P_A
+ 
+#P(H)
+  totalH = 3901
+total = 1000
+
+P_H = (totalH/total)
+ P_H
+ 
+#P(M)
+   totalM = 3901
+total = 1000
+
+P_M = (totalM/total)
+ P_M
+ 
+```
+
+#4. P(A|H) 	5. P(MyP) 	6. P(H|S)
+
+```{r}
+#P(A|H)
+totalA = 300
+totalH = 3901
+P_AH = (totalA/totalH)
+P_AH
+
+#P(MyP)
+totalM = 70
+totalP = 200
+P_MyP = (totalM/totalP)
+P_MyP
+
+#P(H|S)
+totalH = 3901
+totalS = 220
+P_HS = (totalH/totalS)
+P_HS
+```
+

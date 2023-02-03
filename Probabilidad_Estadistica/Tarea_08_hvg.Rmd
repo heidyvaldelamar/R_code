@@ -1,0 +1,106 @@
+---
+title: "Tarea 08 ANOVA"
+author: "Heidy Valdelamar Gonzalez"
+date: "2022-11-17"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Llamamos librerías
+```{r}
+library(car)
+library(emmeans)
+library(rstatix)
+library(tidyverse)
+library(ggplot2)
+```
+
+1. Se seleccionó una muestra aleatoria de los registros de nacimientos únicos de cada una de las cuatro poblaciones. Los pesos (gramos) de los bebés al nacer fueron los presentados en REV_C08_23.csv.
+¿Proporcionan estos datos pruebas suficientes para indicar, con un nivel de a=.05
+ que las cuatro poblaciones difieren en cuanto al peso medio al nacer? Pruebe si hay una diferencia significativa entre todos los pares de medias posibles.
+
+```{r}
+PESO <- read_csv(file="REV_C08_23.csv", show_col_types = FALSE)
+PESO
+boxplot(WEIGHT ~ GROUP, data = PESO)
+```
+```{r}
+PESO_lm <- lm(WEIGHT~ GROUP, data = PESO)
+(anova_PESO_lm <- anova(PESO_lm))
+```
+```{r}
+PESO_aov <- aov(WEIGHT ~ GROUP, data = PESO)
+plot(PESO_aov)
+TukeyHSD(PESO_aov)
+```
+Sí hay una diferencia significativa entre los grupos.
+```{r}
+plot(TukeyHSD(PESO_aov))
+```
+
+
+2. Un estudio realizado por Ikeda et al. se diseñó para determinar la dosis de bromuro de ipratropio en aerosol que mejora el rendimiento del ejercicio mediante ergometría progresiva en bicicleta en pacientes con enfermedad pulmonar obstructiva crónica estable. La edad media de los 20 sujetos masculinos era de 69,2 años, con una desviación estándar de 4,6 años. Entre los datos recogidos estaban los siguientes valores de ventilación máxima (VEmax,L/min) en el ejercicio máximo alcanzado para diferentes niveles de dosis de bromuro de ipratropio en REV_C08_46.csv.
+a) Realice un análisis estadístico de los datos (que incluya la prueba de hipótesis y la construcción de intervalos de confianza) que, en su opinión, arroje información útil para los investigadores.
+b) Determine los valores p para cada estadística de prueba calculada.
+c) Indique todos los supuestos necesarios para validar su análisis.
+```{r}
+dosis <- read_csv(file="REV_C08_46.csv", show_col_types = FALSE)
+dosis
+```
+
+```{r}
+dosis_long<-dosis%>%pivot_longer(cols=c("Placebo", "X40", "X80", "X160", "X240"), names_to = "Condition", values_to = "Index")
+
+dosis_long %>%ggplot(aes(x = Condition, y = Index)) +geom_boxplot() +geom_jitter(aes(color = Condition)) +labs(y = "Ventilación Máxima",title = "Dosis de bromuro de ipratropio")
+```
+```{r}
+pwc <- dosis_long%>%pairwise_t_test(Index~Condition, p.adjust.method = "bonferroni")
+pwc
+```
+
+
+3. Holben et al. diseñaron un estudio para evaluar la ingesta de selenio en mujeres jóvenes en los años de la pubertad. Los investigadores estudiaron una cohorte de 16 mujeres durante tres veranos consecutivos. Una de las variables de resultado fue la ingesta diaria de selenio. Los investigadores examinaron los diarios dietéticos de los sujetos en el transcurso de dos semanas y luego calcularon la ingesta media diaria de selenio. La tabla en EXR_C08_S04_03.csv muestra los valores de la ingesta media diaria de selenio, para las 16 mujeres en los años 1, 2 y 3 del estudio. Estime la tabla ANOVA y calcule el valor p. Sea a=0,05
+```{r}
+ingesta <- read_csv(file="EXR_C08_S04_03.csv", show_col_types = FALSE)
+ingesta
+```
+```{r}
+plot(SEINTAKE~factor(SUBJ)+factor(YEAR), data=ingesta)
+```
+```{r}
+ingesta <- ingesta %>%mutate(Treat=case_when(YEAR=="1"~"1YEAR",YEAR=="2"~"2YEAR",YEAR=="3"~"3YEAR"))
+
+ingesta.aov <- aov(SEINTAKE~factor(SUBJ) + factor(YEAR), data=ingesta)
+
+anova(ingesta.aov)
+```
+```{r}
+TukeyHSD(ingesta.aov)
+```
+No hay diferencias significativas.
+
+
+4. Los investigadores de un centro de traumatología deseaban desarrollar un programa para ayudar a las víctimas de traumatismos cerebrales a recuperar un nivel aceptable de independencia. Se realizó un experimento con 72 sujetos con el mismo grado de daño cerebral. El objetivo era comparar diferentes combinaciones de tratamiento psiquiátrico y terapia física. Cada sujeto fue asignado a una de las 24 combinaciones diferentes de cuatro tipos de tratamiento psiquiátrico y seis programas de fisioterapia. Había tres sujetos en cada combinación. La variable de respuesta es el número de meses transcurridos entre el inicio de la terapia y el momento en que el paciente fue capaz de funcionar de forma independiente. Los resultados están en EXR_C08_S05_02.csv.
+¿Se puede concluir sobre la base de estos datos que los diferentes programas de tratamiento psiquiátrico tienen efectos diferentes? ¿Se puede concluir que los programas de fisioterapia tienen una eficacia diferente? ¿Se puede concluir que existe una interacción entre los programas de tratamiento psiquiátrico y los programas de fisioterapia? Sea a=.05
+ para cada prueba.
+```{r}
+RES <- read.csv("EXR_C08_S05_02.csv")
+RES
+plot(MONTHS~factor(PHYS)+factor(PSYCH), data=RES)
+```
+```{r}
+RES <- RES %>%mutate(Treat=case_when(PSYCH=="A"~"APSYCH",PSYCH=="B"~"BPSYCH",PSYCH=="C"~"CPSYCH",PSYCH=="D"~"DPSYCH"))
+
+RES.aov <- aov(MONTHS~factor(PHYS) + factor(PSYCH), data=RES)
+
+anova(RES.aov)
+```
+```{r}
+TukeyHSD(RES.aov)
+```
+Sí hay una diferencia significativa entre los grupos.

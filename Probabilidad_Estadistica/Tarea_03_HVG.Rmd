@@ -1,0 +1,144 @@
+---
+title: "Tarea_03_PE_HVG"
+author: "Heidy Valdelamar Gonzalez"
+date: "2022-09-18"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## 1 
+#En el estudio de las huellas dactilares, una característica cuantitativa importante es el número total de crestas de los 10 dedos de un individuo. Supongamos que el recuento total de crestas de los individuos de una determinada población se distribuye aproximadamente de forma normal con una media de 140 y una desviación estándar de 50. Encuentra la probabilidad de que un individuo de esta población tenga un recuento de crestas de: #
+# 200 o más
+```{r}
+curve(dnorm(x , mean = 140, sd = 50), from = 0, to = 280, main = "200 o más")
+abline(v=200, col = 4, lty = 2)
+pnorm(200, mean = 140, sd = 50, lower.tail = FALSE) #lower.tail = FALSE Toma la parte derecha de la distribución
+```
+# menos de 100
+
+```{r}
+curve(dnorm(x , mean = 140, sd = 50), from = 0, to = 280, main = "menos de 100")
+abline(v=100, col = 4, lty = 2)
+pnorm(100, mean = 140, sd = 50, lower.tail = TRUE) #lower.tail = FALSE Toma la parte izquierda de la distribución
+```
+ # entre 100 y 200
+```{r}
+curve(dnorm(x , mean = 140, sd = 50), from = 0, to = 280, main = "entre 100 y 200")
+abline(v=100, col = 4)
+abline(v=200, col = 4)
+pnorm(200, mean = 140, sd = 50, lower.tail = TRUE) - pnorm(100, mean = 140, sd = 50, lower.tail = TRUE)
+```
+ # entre 200 y 250
+```{r}
+curve(dnorm(x , mean = 140, sd = 50), from = 0, to = 280, main = "entre 200 y 250")
+abline(v=200, col = 4)
+abline(v=250, col = 4)
+pnorm(250, mean = 140, sd = 50, lower.tail = TRUE) - pnorm(200, mean = 140, sd = 50, lower.tail = TRUE)
+```
+# En una población de 10.000 personas, ¿cuántas esperarías que tuvieran un recuento de crestas de 200 o más?
+```{r}
+curve(dnorm(x , mean = 140, sd = 50), from = 0, to = 10000, main = "En una población de 10.000 personas")
+abline(v=200, col = 4, lty = 2)
+pnorm(200, mean = 140, sd = 50, lower.tail = FALSE)
+```
+# La misma ya que la distrubución normal se mantiene en el rango de la media
+
+##2
+#Una de las variables de los datos del Registro de Nacimientos de Carolina del Norte son los kilos ganados durante el embarazo. Según los datos de todo el registro para el año 2001, el número de libras ganadas durante el embarazo tuvo una distribución aproximadamente normal con una media de 30,23 libras y una desviación estándar de 13,84 libras. Calcule la probabilidad de que una otra seleccionada al azar en Carolina del Norte en 2001 ganara#
+
+#Menos de 15 libras durante el embarazo
+```{r}
+curve(dnorm(x , mean = 30.23, sd =  13.84 ), from = 0, to = 60.46, main = "menos de 15 libras")
+abline(v=15, col = 4, lty = 2)
+pnorm(15, mean = 30.23, sd =  13.84, lower.tail = TRUE) #lower.tail = FALSE Toma la parte izquierda de la distribución
+```
+# Más de 40 libras
+```{r}
+curve(dnorm(x , mean = 30.23, sd =  13.84 ), from = 0, to = 60.46, main = " Más de 40 libras")
+abline(v=40, col = 4, lty = 2)
+pnorm(40, mean = 30.23, sd =  13.84, lower.tail = FALSE) #lower.tail = FALSE Toma la parte derecha de la distribución
+```
+# Entre 14 y 40 libras
+```{r}
+curve(dnorm(x , mean = 30.23, sd =  13.84), from = 0, to = 60.46, main = " Entre 14 y 40 libras")
+abline(v=14, col = 4)
+abline(v=40, col = 4)
+pnorm(40, mean = 30.23, sd =  13.84, lower.tail = TRUE) - pnorm(14, mean = 30.23, sd =  13.840, lower.tail = TRUE)
+```
+# Menos de 10 libras
+```{r}
+curve(dnorm(x , mean = 30.23, sd =  13.84 ), from = 0, to = 60.46, main = "menos de 10 libras")
+abline(v=10, col = 4, lty = 2)
+pnorm(10, mean = 30.23, sd =  13.84, lower.tail = TRUE) #lower.tail = FALSE Toma la parte izquierda de la distribución
+```
+
+#  Entre 10 y 20 libras
+```{r}
+curve(dnorm(x , mean = 30.23, sd =  13.84), from = 0, to = 60.46, main = " Entre 10 y 20 libras")
+abline(v=10, col = 4)
+abline(v=20, col = 4)
+pnorm(20, mean = 30.23, sd =  13.84, lower.tail = TRUE) - pnorm(10, mean = 30.23, sd =  13.840, lower.tail = TRUE)
+```
+
+## 3
+# Suponga que la duración media de la estancia en un hospital de enfermedades crónicas de un determinado tipo de paciente es de 60 días con una desviación estándar de 15. Si es razonable suponer una distribución aproximadamente normal de las duraciones de la estancia, encuentre la probabilidad de que un paciente seleccionado al azar de este grupo tenga una duración de la estancia#
+
+# Mayor de 50 días
+```{r}
+curve(dnorm(x , mean = 60, sd =  15 ), from = 0, to = 120, main = " Mayor de 50 días")
+abline(v=50, col = 4, lty = 2)
+pnorm(50, mean = 60, sd =  15, lower.tail = FALSE) #lower.tail = FALSE Toma la parte derecha de la distribución
+```
+# Menos de 30 días
+```{r}
+curve(dnorm(x , mean = 60, sd =  15 ), from = 0, to = 120, main = " Menos de 30 días")
+abline(v=30, col = 4, lty = 2)
+pnorm(30, mean = 60, sd =  15, lower.tail = TRUE) #lower.tail = FALSE Toma la parte izquierda de la distribución
+```
+# Entre 30 y 60 días
+```{r}
+curve(dnorm(x , mean = 60, sd =  15), from = 0, to = 120, main = " Entre 30 y 60 días")
+abline(v=30, col = 4)
+abline(v=60, col = 4)
+pnorm(60, mean = 60, sd =  15, lower.tail = TRUE) - pnorm(30, mean = 60, sd =  15, lower.tail = TRUE)
+```
+
+# Mayor de 90 días
+```{r}
+curve(dnorm(x , mean = 60, sd =  15 ), from = 0, to = 120, main = " Mayor de 90 días")
+abline(v=90, col = 4, lty = 2)
+pnorm(90, mean = 60, sd =  15, lower.tail = FALSE) #lower.tail = FALSE Toma la parte derecha de la distribución
+```
+
+```{r}
+#distriución binomial
+library("binom")
+dbinom(20, 20, 0.24) 
+
+dbinom(0, 5, 0.24)
+pbinom(1, 5, 0.24, lower.tail = FALSE)
+pbinom(1, 5, 0.24, lower.tail = T)
+
+pbinom(3, 5, 0.24, lower.tail = T)- pbinom(0, 5, 0.24, lower.tail = T)
+pbinom(2,5,0.24, lower.tail = T)
+
+dbinom(5, 5, 0.24) 
+
+```
+```{r}
+#Distribución de Poisson
+
+dpois(7,5)
+
+ppois(9,5, lower.tail = F)
+
+dpois(0, 5)
+
+ppois(4,5, lower.tail = T)
+```
+
+

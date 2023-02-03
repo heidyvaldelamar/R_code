@@ -1,0 +1,98 @@
+---
+title: "Tarea 07 Regresión y Correlación"
+author: "Heidy Valdelamar Gonzalez"
+date: "2022-11-17"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Cargamos los paquetes que se usarán
+```{r}
+library(tidyverse)
+library(rcompanion)
+```
+
+1. Reiss et al. compararon los ensayos en el punto de atención y en el laboratorio hospitalario estándar para controlar a los pacientes que reciben un único anticoagulante o un régimen consistente en una combinación de anticoagulantes. Cuando se comparan dos técnicas de medición, es bastante habitual utilizar un análisis de regresión en el que una variable se utiliza para predecir otra. En el presente estudio, los investigadores obtuvieron medidas del cociente internacional normalizado (INR) mediante el análisis de muestras de sangre capilar y venosa recogidas de 90 sujetos que tomaban warfarina. El INR, utilizado especialmente cuando los pacientes reciben warfarina, mide la capacidad de coagulación de la sangre. Las pruebas de INR en el punto de atención se realizaron con el producto de ensayo CoaguChek. Las pruebas hospitalarias se realizaron con los ensayos estándar del laboratorio del hospital. Los autores utilizaron el nivel de INR del ensayo hospitalario para predecir el nivel de INR de CoaguChek. Las mediciones se encuentran en el archivo EXR_C09_S03_04.csv.
+
+Trace un diagrama de dispersión y obtenga el modelo de regresión y el p
+. Trazarlo en el diagrama de dispersión.
+
+```{r}
+coagu <- read_csv("EXR_C09_S03_04.csv", show_col_types = FALSE)
+coagu
+```
+
+```{r}
+# X capilar, Y venosa
+plot(Y ~ X, data = coagu, pch = 20, xlab = "INR. capilar", ylab = "INR. venosa", xlim = c(0, 20), ylim = c(0, 25))
+abline(v = mean(coagu$X), col = 2, lty = 2)
+abline(h = mean(coagu$Y), col = 2, lty = 2)
+
+# MinSqr 
+coagu_lm <- lm(Y ~ X, data = coagu)
+summary(coagu_lm)
+```
+2. Otra variable de interés en el estudio de Reiss et al. (ejercicio 1) fue la tromboplastina parcial (aPTT), la prueba estándar utilizada para controlar la anticoagulación con heparina. Utilice los datos del archivo EXR_C09_S07_02.csv para examinar la correlación entre los niveles de aPTT medidos por el ensayo de punto de atención CoaguCheck y el ensayo estándar del laboratorio del hospital en 90 sujetos que recibieron heparina sola, heparina con warfarina, y warfarina y exoenoxaparina.
+
+- Prepara un diagrama de dispersión.
+- Calcule el coeficiente de correlación de la muestra.
+- Prueba H0:p=0 al nivel de significación del 0,05 y exponga sus conclusiones.
+- Determine el valor p de la prueba.
+- Construya el intervalo de confianza del 95 por ciento para p.
+
+```{r}
+niveles <- read_csv("EXR_C09_S07_02.csv", show_col_types = FALSE)
+niveles
+```
+
+plot(COAGU ~ HOSP , data = niveles, pch = 20, xlab = "aPTT medidos", ylab = "niveles de coagulación")
+
+```{r}
+cor.test(~ HOSP + COAGU, data = niveles, alternative = c("two.sided"), method = c("pearson"), conf.level = 0.95)
+```
+3. Un estudio de Scrogin et al. fue diseñado para evaluar los efectos de las manipulaciones simultáneas de NaCl y calcio en la dieta sobre la presión arterial, así como la presión arterial y las respuestas de las catecolaminas al estrés. Los sujetos eran ratas macho espontáneamente hipertensas y sensibles a la sal. Entre los análisis realizados por los investigadores figuraba una correlación entre la presión arterial basal y la concentración de epinefrina en plasma (E). Se recogieron los datos del archivo REV_C09_16.csv sobre estas dos variables. Sea a =.01.
+
+- Realice el análisis necesario y pruebe las hipótesis a los niveles de significación indicados. Calcule el valor p para el modelo lineal.
+- Indique todos los supuestos necesarios para validar su análisis. Describa las poblaciónes sobre las cuales cree que las inferencias basadas en su análisis serían aplicables.
+
+```{r}
+diet <- read_csv("REV_C09_16.csv", show_col_types = FALSE)
+diet
+```
+
+```{r}
+plot(BP ~ PLASMAE, data = diet, pch = 20, xlab = "concentración de epinefrina en plasma (E)", ylab = "presión arterial basal")
+cor.test(~ BP + PLASMAE, data = diet, alternative = c("two.sided"), method = c("pearson"), conf.level = 0.99)
+```
+
+4. El objetivo de un estudio realizado por Peacock et al. era investigar si la osteoartritis espinal es responsable de que la densidad mineral ósea (DMO) de la columna lumbar sea mayor cuando se mide en el plano anteroposterior que cuando se mide en el plano lateral. Se estudiaron las radiografías laterales de la columna vertebral de mujeres (con un rango de edad de 34 a 87 años) que acudieron a un servicio ambulatorio de un hospital para la medición de la densidad ósea y se sometieron a una radiografía de la columna lumbar. Entre los datos recogidos (archivo REV_C09_41.csv) se encontraban las mediciones de la DMO anteroposterior (A) y lateral (L) (g/cm2).
+- Construya los gráficos que considere útiles para ilustrar las relaciones entre las variables.
+- Realice un análisis estadístico de los datos (que incluya la comprobación de hipótesis y la construcción de intervalos de confianza) que, en su opinión, aporte información útil para los investigadores.
+- Utilice las técnicas aprendidas en otros capítulos, como las pruebas de hipótesis y la estimación de intervalos en relación con las medias y las proporciones.
+- Determine los valores p para cada estadística de prueba calculada.
+
+```{r}
+DMO <- read_csv("REV_C09_41.csv", show_col_types = FALSE)
+DMO
+```
+```{r}
+boxplot(DMO$ABMD, DMO$LBMD, xlab = "mediciones", ylab = "densidad mineral ósea (DMO)")
+```
+```{r}
+# Para hacer una prueba t usando notación de fórmula DMO ~ Condition
+# Se necesitan alargar los datos
+
+DMO_long <- DMO %>% pivot_longer(cols = everything(), names_to = "Condition", values_to = "DMO")
+
+# y estar seguros que Condition es un factor en el orden adecuado
+
+DMO_long <- DMO_long %>% mutate( Condition = Condition %>% fct_relevel("DMO anteroposterior (A)", "DMO lateral (L)"))
+boxplot(DMO ~ Condition, data = DMO_long, ylab = "densidad mineral ósea (DMO)")
+```
+```{r}
+cor.test(~ ABMD + LBMD, data = DMO, alternative = c("two.sided"), method = c("pearson"), conf.level = 0.95)
+```
+

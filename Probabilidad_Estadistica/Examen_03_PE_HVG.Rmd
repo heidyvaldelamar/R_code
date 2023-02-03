@@ -1,0 +1,101 @@
+---
+title: "Tercer Examen Parcial de Probabilidad y Estadística"
+author: "Heidy Valdelamar Gonzalez"
+date: "2022-10-24"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1.	¿Podemos concluir que la edad promedio de muerte en los pacientes con drepanocitosis homocigota es menor a los 30 años? Una muestra de 50 pacientes se lista en `EXR_C07_S02_15.csv` con las edades en años, de fallecimiento. Sea alpha = 0.05. Explique qué otras suposiciones fueron necesarias para estimar el resultado. Grafique sus datos y explique su hipótesis y su respuesta.  
+```{r}
+# cargamos liberías
+library("tidyverse")
+install.packages("Rmisc")
+library("Rmisc")
+library("rcompanion")
+```
+
+Leemos el csv
+```{r}
+Edades <- read_csv("EXR_C07_S02_15.csv", show_col_types = FALSE)
+Edades
+```
+Prueba T-Student por la izquierda
+```{r}
+t.test(Edades, alternative = "less", mu = 50, paired = FALSE, conf.level = 0.95)
+```
+El valor de p = 2.2e-16 es menor al de alpha = 0.05, por lo tanto descartamos la hipótesis nula, el promedio es menor al dado donde mu < 50 dando: 19.46 . El intervalo de confianza es menor a 23.68444. el valor estimado de la muestra es 19.46.
+Podemos conclir que la edad promedio de muerte en los pacientes con drepanocitosis homocigota es menor a los 30 años.
+
+
+
+2.	¿Podemos concluir que pacientes con hipertensión primaria (PH), en promedio, tienen niveles mayores de colesterol total que los pacientes no hipertensos (NT)?  Esta fue una de las preguntas que hizo en su investigación Rossi et al. en la tabla contenida en `EXR_C07_S03_04.csv` se muestran las medidas de colesterol total (mg/dl) de 133 pacientes con PH y 41 pacientes NT.  A partir de estos datos ¿se puede concluir que los pacientes PH tienen mayores niveles de colesterol total que los NT? Use alpha = 0.05. Haga gráficas de caja y explique su hipótesis y su respuesta.  
+
+Leemos el csv
+```{r}
+Colesterol <- read_csv("EXR_C07_S03_04.csv", show_col_types = FALSE)
+Colesterol
+tail(Colesterol)
+```
+Filtramos los grupos
+```{r}
+# Para hacer vos vectores con muestras de población de PH y NT
+PH <- (filter(Colesterol, Group == 1))
+NT <- (filter(Colesterol, Group == 2))
+```
+Prueba T-Student doble si mu = 0, por ambos lados.
+```{r}
+# Dos colas para comparar igualdad
+t.test(PH$Length, NT$Length, alternative = "two.sided", mu = 0,  var.equal = FALSE, conf.level = .95)
+```
+El valor p = 0.0004181 es menor al alpha = 0.05, por lo tanto descartamos la hipótesis nula. El intervalo de confianza es de 9.990589 a 33.047738. el valor estimado de la muestra para PH es214.7143 y para NT es 193.1951.
+Podemos concluir que que los pacientes PH tienen mayores niveles de colesterol total que los NT.
+
+
+
+3.	Montner et al. condujeron estudios para probar los efectos de la hiperhidratación inducida por glicerol (GEH) en ciclismo de alta resistencia. Estudiaron a 11 sujetos, edades 22-40 años, que regularmente practicaban ciclismo por 75 millas a la semana. En el archivo `REV_C07_41.csv` se listan los volúmenes de orina (ml) iniciales seguidos de aquellos con consumo de agua con glicerol. Explique sus suposiciones y conclusiones, construya gráficas y explique el modelo que decidió usar.
+
+Leemos el csv
+```{r}
+GEH <- read_csv("REV_C07_41.csv", show_col_types = FALSE)
+GEH
+```
+Gráfica Boxplot
+```{r}
+boxplot(GEH$Glycerol, GEH$Control, ylab = "volúmenes de orina (ml) iniciales")
+```
+El grupo control tuvo niveles mayores de volúmenes de orina, sin embargo, el grupo que consumió agua con glycerol es más grande, pero en promedio el volumen de orina es menor. tendríamos una diferencia negariva de ambos grupos.
+
+
+Prueba T_Student pareada doble por la derecha, nivel de confianza del 99%
+```{r}
+t.test(GEH$Glycerol, GEH$Control, alternative = "less", paired = TRUE, conf.level = 0.99)
+```
+Tenemos un valor p de 1.671e-05 menor a el alpha que definimos = 0.005, por lo que descartamos la hipótesis nula. El intervalo de confianza es de -406.5462, la diferencia de los promedios es negativa: -666.3636. Concluimos que la diferencia entre los grupos es que la media del grupo control es mayor a la media del grupo que consumió agua con glycerol, por lo tanto el agua con glycerol no induce la hiperhidratación en los 11 sujetos.
+
+4.	Muestras aleatorias simples de dos líneas genéticas de ratones se usaron en un experimento que resultó en las siguientes medidas de niveles de glucosa en suero, después de una experiencia traumática:
+Línea A: 54, 99, 105, 46, 70, 87, 55, 58, 139, 91
+Línea B: 93, 91, 93, 150, 80, 104, 128, 83, 88, 95, 94, 97
+¿Estos datos dan suficiente evidencia para concluir que la varianza de los datos de los ratones de la línea A es mayor a la varianza de los datos de los ratones de la línea B? Sea Alpha = 0.05. Explique su hipótesis nula y todas sus repuestas.
+```{r}
+Gen <- data.frame(
+  "Linea_A" = c(54, 99, 105, 46, 70, 87, 55, 58, 139, 91,NA,NA), 
+  "Linea_B" = c(93, 91, 93, 150, 80, 104, 128, 83, 88, 95, 94, 97))
+```
+
+Gráfica Boxplot
+```{r}
+boxplot(Gen$Linea_A, Gen$Linea_B, ylab = "niveles de glucosa en suero")
+```
+
+Prueba T_Student pareada doble por la derecha, nivel de confianza del 99%
+```{r}
+t.test(Gen$Linea_A, Gen$Linea_B, alternative = "less", paired = TRUE, var.equal = TRUE, conf.level = 0.95)
+```
